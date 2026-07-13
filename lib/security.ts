@@ -80,21 +80,23 @@ export async function verifyBatchToken(token: string, secret: string) {
   }
 }
 
-export function getBatchSecret() {
-  const configured = process.env.BATCH_SIGNING_SECRET;
-  if (configured) return configured;
-  if (process.env.NODE_ENV !== "production") return "local-development-signing-secret";
-  return null;
+export type SecurityEnv = {
+  APP_ORIGIN?: string;
+  BATCH_SIGNING_SECRET?: string;
+};
+
+export function getBatchSecret(env: SecurityEnv) {
+  return env.BATCH_SIGNING_SECRET ?? null;
 }
 
-export function isAllowedOrigin(request: Request) {
+export function isAllowedOrigin(request: Request, env: SecurityEnv) {
   const origin = request.headers.get("origin");
-  if (!origin) return process.env.NODE_ENV !== "production";
+  const url = new URL(request.url);
+  if (!origin) return url.hostname === "localhost" || url.hostname === "127.0.0.1";
 
-  const explicitOrigin = process.env.APP_ORIGIN?.replace(/\/$/u, "");
+  const explicitOrigin = env.APP_ORIGIN?.replace(/\/$/u, "");
   if (explicitOrigin) return origin === explicitOrigin;
 
-  const url = new URL(request.url);
   const forwardedHost = request.headers.get("x-forwarded-host");
   const forwardedProto = request.headers.get("x-forwarded-proto");
   const expected = forwardedHost

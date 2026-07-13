@@ -1,34 +1,33 @@
-import { NextResponse } from "next/server";
-import { apiError } from "@/lib/api-errors";
+import { apiError } from "../../lib/api-errors";
 import {
   clientIp,
   createBatchToken,
   getBatchSecret,
   isAllowedOrigin,
-} from "@/lib/security";
-
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
+} from "../../lib/security";
+import type { FunctionContext } from "../_shared/types";
 
 type SessionBody = { count?: unknown; turnstileToken?: unknown };
 
-async function verifyTurnstile(token: string, ip: string) {
-  const secret = process.env.TURNSTILE_SECRET_KEY;
-  if (!secret) return process.env.NODE_ENV !== "production" && token === "dev-bypass";
+async function verifyTurnstile(request: Request, token: string, ip: string, secret?: string) {
+  if (!secret) {
+    const hostname = new URL(request.url).hostname;
+    return (hostname === "localhost" || hostname === "127.0.0.1") && token === "dev-bypass";
+  }
 
   const body = new URLSearchParams({ secret, response: token });
   if (ip !== "unknown") body.set("remoteip", ip);
-  const result = await fetch(
-    "https://challenges.cloudflare.com/turnstile/v0/siteverify",
-    { method: "POST", body, cache: "no-store" },
-  );
+  const result = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+    method: "POST",
+    body,
+  });
   if (!result.ok) return false;
   const data = (await result.json()) as { success?: boolean };
   return data.success === true;
 }
 
-export async function POST(request: Request) {
-  if (!isAllowedOrigin(request)) return apiError("INVALID_REQUEST", 403);
+export async function onRequestPost({ request, env }: FunctionContext) {
+  if (!isAllowedOrigin(request, env)) return apiError("INVALID_REQUEST", 403);
 
   let body: SessionBody;
   try {
@@ -46,14 +45,14 @@ export async function POST(request: Request) {
   }
 
   const ip = clientIp(request);
-  if (!(await verifyTurnstile(body.turnstileToken, ip))) {
+  if (!(await verifyTurnstile(request, body.turnstileToken, ip, env.TURNSTILE_SECRET_KEY))) {
     return apiError("BATCH_AUTH_REQUIRED", 401);
   }
 
-  const secret = getBatchSecret();
+  const secret = getBatchSecret(env);
   if (!secret) return apiError("CONFIGURATION_ERROR", 503);
   const { token, claims } = await createBatchToken(count, secret);
-  return NextResponse.json(
+  return Response.json(
     { token, batchId: claims.batchId, expiresAt: claims.expiresAt },
     { headers: { "Cache-Control": "no-store" } },
   );

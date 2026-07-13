@@ -5,15 +5,13 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
     "lint": "eslint .",
     "test": "vitest run",
-    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
-    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
+    "functions:build": "wrangler pages functions build --outdir .wrangler/functions-build",
+    "preview": "npm run build && wrangler pages dev out",
+    "deploy": "npm run build && wrangler pages deploy out --project-name image-background-remover"
   },
   "dependencies": {
-    "@opennextjs/cloudflare": "^1.13.16",
     "fflate": "^0.8.3",
     "lucide-react": "^0.468.0",
     "next": "16.2.10",

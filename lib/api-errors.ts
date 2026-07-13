@@ -1,5 +1,3 @@
-import { NextResponse } from "next/server";
-
 export type ApiErrorCode =
   | "INVALID_FILE_TYPE"
   | "FILE_TOO_LARGE"
@@ -13,7 +11,7 @@ export type ApiErrorCode =
   | "INTERNAL_ERROR";
 
 export function apiError(code: ApiErrorCode, status: number, retryAfter?: number) {
-  const response = NextResponse.json({ error: { code } }, { status });
+  const response = Response.json({ error: { code } }, { status });
   response.headers.set("Cache-Control", "no-store");
   if (retryAfter) response.headers.set("Retry-After", String(retryAfter));
   return response;
