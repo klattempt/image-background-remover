@@ -61,7 +61,8 @@ const MAX_FILE_BYTES = 15 * 1024 * 1024;
 const MAX_DIMENSION = 10_000;
 const MAX_ZIP_BYTES = 150 * 1024 * 1024;
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
-const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+const TURNSTILE_SITE_KEY =
+  process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAAAD1I9KHrA_OCn76_";
 
 const errorCopy: Record<ErrorCode, string> = {
   INVALID_FILE_TYPE: "This file type is not supported.",
