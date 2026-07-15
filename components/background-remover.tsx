@@ -9,6 +9,8 @@ import {
   Layers3,
   LoaderCircle,
   LockKeyhole,
+  LogIn,
+  LogOut,
   PackageCheck,
   RotateCcw,
   ShieldCheck,
@@ -46,6 +48,7 @@ type ErrorCode =
   | "INTERNAL_ERROR";
 
 type SessionResponse = { token: string; batchId: string; expiresAt: number };
+type AuthUser = { id: string; email: string; name: string | null; avatarUrl: string | null };
 
 declare global {
   interface Window {
@@ -210,6 +213,8 @@ export function BackgroundRemover() {
     TURNSTILE_SITE_KEY ? null : "dev-bypass",
   );
   const [downloadedIds, setDownloadedIds] = useState<Set<string>>(new Set());
+  const [authUser, setAuthUser] = useState<AuthUser | null>(null);
+  const [authLoaded, setAuthLoaded] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const turnstileRef = useRef<HTMLDivElement>(null);
   const turnstileWidgetId = useRef<string | null>(null);
@@ -223,6 +228,22 @@ export function BackgroundRemover() {
   const totalResultBytes = completed.reduce((total, item) => total + (item.resultBlob?.size ?? 0), 0);
   const progress = items.length ? Math.round((processed / items.length) * 100) : 0;
   const hasUndownloadedResults = completed.some((item) => !downloadedIds.has(item.id));
+
+  useEffect(() => {
+    const authError = new URLSearchParams(window.location.search).get("auth_error");
+    if (authError) {
+      window.history.replaceState({}, "", window.location.pathname);
+      window.setTimeout(
+        () => setNotice("Google sign-in could not be completed. Please try again."),
+        0,
+      );
+    }
+    void fetch("/api/auth/session", { headers: { Accept: "application/json" } })
+      .then((response) => response.json() as Promise<{ user: AuthUser | null }>)
+      .then(({ user }) => setAuthUser(user))
+      .catch(() => setAuthUser(null))
+      .finally(() => setAuthLoaded(true));
+  }, []);
 
   useEffect(() => {
     if (!TURNSTILE_SITE_KEY || !turnstileRef.current) return;
@@ -481,6 +502,11 @@ export function BackgroundRemover() {
     sendEvent("image_downloaded", { mode: "zip", count: completed.length });
   }
 
+  async function logout() {
+    const response = await fetch("/api/auth/logout", { method: "POST" });
+    if (response.ok) setAuthUser(null);
+  }
+
   const stats = useMemo(
     () => [
       { label: "In batch", value: String(items.length).padStart(2, "0") },
@@ -500,6 +526,22 @@ export function BackgroundRemover() {
         <div className="nav-meta">
           <span><ShieldCheck size={15} /> No image storage</span>
           <a href="#faq">FAQ</a>
+          {authLoaded && authUser ? (
+            <div className="account-menu">
+              {authUser.avatarUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={authUser.avatarUrl} alt="" referrerPolicy="no-referrer" />
+              ) : null}
+              <span>{authUser.name ?? authUser.email}</span>
+              <button type="button" onClick={() => void logout()} aria-label="Sign out">
+                <LogOut size={15} />
+              </button>
+            </div>
+          ) : (
+            <a className="login-link" href="/api/auth/google" aria-busy={!authLoaded}>
+              <LogIn size={15} /> Sign in with Google
+            </a>
+          )}
         </div>
       </nav>
 

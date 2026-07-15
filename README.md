@@ -8,6 +8,7 @@ Batch-remove backgrounds from ecommerce product photos and export consistent 200
 - Tailwind CSS 4
 - Cloudflare Pages and Pages Functions
 - remove.bg API
+- Google OAuth and Cloudflare D1 for users and sessions
 - Browser Canvas and fflate for local image composition and ZIP export
 
 ## Local development
@@ -29,7 +30,9 @@ Use these Git build settings:
 - Build command: `npm run build`
 - Build output directory: `out`
 
-Configure `REMOVE_BG_API_KEY`, `BATCH_SIGNING_SECRET`, and `TURNSTILE_SECRET_KEY` as encrypted production variables. Configure `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `APP_ORIGIN`, and optionally `MAX_REQUESTS_PER_HOUR` as regular variables.
+Configure `REMOVE_BG_API_KEY`, `BATCH_SIGNING_SECRET`, `TURNSTILE_SECRET_KEY`, and `GOOGLE_CLIENT_SECRET` as encrypted production variables. Configure `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `APP_ORIGIN`, `GOOGLE_CLIENT_ID`, `GOOGLE_REDIRECT_URI`, and optionally `MAX_REQUESTS_PER_HOUR` as regular variables.
+
+Bind a D1 database as `DB`, then apply `migrations/0001_auth.sql`. The application stores only the Google account identifier, basic profile fields, and hashed session tokens. It does not store Google access tokens or uploaded images.
 
 ## Commands
 
