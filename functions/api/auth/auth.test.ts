@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { OAUTH_STATE_COOKIE } from "../../_shared/auth";
+import { OAUTH_RETURN_COOKIE, OAUTH_STATE_COOKIE } from "../../_shared/auth";
 import { onRequestGet as callback } from "./callback";
 import { onRequestGet as startGoogleLogin } from "./google";
 import { onRequestGet as getSession } from "./session";
@@ -21,6 +21,15 @@ describe("Google authentication", () => {
     expect(cookie).toContain(`${OAUTH_STATE_COOKIE}=`);
     expect(cookie).toContain("HttpOnly");
     expect(cookie).toContain("Secure");
+  });
+
+  it("stores only an allowed post-login return path", async () => {
+    const response = await startGoogleLogin({
+      request: new Request("https://example.com/api/auth/google?return_to=/account"),
+      env: { GOOGLE_CLIENT_ID: "client-id" },
+    });
+
+    expect(response.headers.get("Set-Cookie")).toContain(`${OAUTH_RETURN_COOKIE}=%2Faccount`);
   });
 
   it("rejects a callback whose state does not match", async () => {

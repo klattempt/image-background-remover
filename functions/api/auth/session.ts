@@ -1,7 +1,14 @@
 import { readCookie, SESSION_COOKIE, secureCookie, sha256 } from "../../_shared/auth";
 import type { FunctionContext } from "../../_shared/types";
 
-type UserRow = { id: string; email: string; name: string | null; avatarUrl: string | null };
+type UserRow = {
+  id: string;
+  email: string;
+  name: string | null;
+  avatarUrl: string | null;
+  createdAt: string;
+  lastLoginAt: string;
+};
 
 export async function onRequestGet({ request, env }: FunctionContext) {
   const token = readCookie(request, SESSION_COOKIE);
@@ -10,7 +17,8 @@ export async function onRequestGet({ request, env }: FunctionContext) {
   }
 
   const user = await env.DB.prepare(
-    `SELECT users.id, users.email, users.name, users.avatar_url AS avatarUrl
+    `SELECT users.id, users.email, users.name, users.avatar_url AS avatarUrl,
+            users.created_at AS createdAt, users.last_login_at AS lastLoginAt
      FROM sessions JOIN users ON users.id = sessions.user_id
      WHERE sessions.token_hash = ? AND sessions.expires_at > ?`,
   ).bind(await sha256(token), new Date().toISOString()).first<UserRow>();

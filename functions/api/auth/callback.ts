@@ -1,6 +1,7 @@
 import {
   authFailure,
   googleRedirectUri,
+  OAUTH_RETURN_COOKIE,
   OAUTH_STATE_COOKIE,
   randomToken,
   readCookie,
@@ -88,14 +89,15 @@ export async function onRequestGet({ request, env }: FunctionContext) {
       "INSERT INTO sessions (id, user_id, token_hash, expires_at, created_at) VALUES (?, ?, ?, ?, ?)",
     ).bind(crypto.randomUUID(), user.id, await sha256(sessionToken), expiresAt, now).run();
 
-    return new Response(null, {
-      status: 302,
-      headers: {
-        Location: new URL("/", request.url).toString(),
-        "Set-Cookie": secureCookie(SESSION_COOKIE, sessionToken, SESSION_SECONDS),
-        "Cache-Control": "no-store",
-      },
+    const returnTo = readCookie(request, OAUTH_RETURN_COOKIE) === "/account" ? "/account" : "/";
+    const headers = new Headers({
+      Location: new URL(returnTo, request.url).toString(),
+      "Cache-Control": "no-store",
     });
+    headers.append("Set-Cookie", secureCookie(SESSION_COOKIE, sessionToken, SESSION_SECONDS));
+    headers.append("Set-Cookie", secureCookie(OAUTH_STATE_COOKIE, "", 0));
+    headers.append("Set-Cookie", secureCookie(OAUTH_RETURN_COOKIE, "", 0));
+    return new Response(null, { status: 302, headers });
   } catch {
     return authFailure(request, "login_failed");
   }

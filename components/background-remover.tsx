@@ -528,19 +528,24 @@ export function BackgroundRemover() {
           <a href="#faq">FAQ</a>
           {authLoaded && authUser ? (
             <div className="account-menu">
-              {authUser.avatarUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={authUser.avatarUrl} alt="" referrerPolicy="no-referrer" />
-              ) : null}
-              <span>{authUser.name ?? authUser.email}</span>
+              <a className="account-profile-link" href="/account" aria-label="Open your account">
+                {authUser.avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={authUser.avatarUrl} alt="" referrerPolicy="no-referrer" />
+                ) : null}
+                <span>{authUser.name ?? authUser.email}</span>
+              </a>
               <button type="button" onClick={() => void logout()} aria-label="Sign out">
                 <LogOut size={15} />
               </button>
             </div>
           ) : (
-            <a className="login-link" href="/api/auth/google" aria-busy={!authLoaded}>
-              <LogIn size={15} /> Sign in
-            </a>
+            <div className="signed-out-actions">
+              <a className="register-link" href="/register">Register</a>
+              <a className="login-link" href="/api/auth/google" aria-busy={!authLoaded}>
+                <LogIn size={15} /> Sign in
+              </a>
+            </div>
           )}
         </div>
       </nav>

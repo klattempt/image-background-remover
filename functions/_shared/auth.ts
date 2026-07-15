@@ -2,6 +2,7 @@ import type { AppEnv } from "./types";
 
 export const SESSION_COOKIE = "__Host-cutline_session";
 export const OAUTH_STATE_COOKIE = "__Host-cutline_oauth_state";
+export const OAUTH_RETURN_COOKIE = "__Host-cutline_oauth_return";
 export const SESSION_SECONDS = 60 * 60 * 24 * 30;
 
 export function randomToken() {
