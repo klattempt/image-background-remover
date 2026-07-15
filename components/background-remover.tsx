@@ -539,7 +539,7 @@ export function BackgroundRemover() {
             </div>
           ) : (
             <a className="login-link" href="/api/auth/google" aria-busy={!authLoaded}>
-              <LogIn size={15} /> Sign in with Google
+              <LogIn size={15} /> Sign in
             </a>
           )}
         </div>
