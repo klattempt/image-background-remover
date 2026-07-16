@@ -39,6 +39,8 @@ type ErrorCode =
   | "INVALID_FILE_TYPE"
   | "FILE_TOO_LARGE"
   | "BATCH_AUTH_REQUIRED"
+  | "AUTH_REQUIRED"
+  | "INSUFFICIENT_CREDITS"
   | "RATE_LIMITED"
   | "NO_FOREGROUND"
   | "UPSTREAM_UNAVAILABLE"
@@ -71,6 +73,8 @@ const errorCopy: Record<ErrorCode, string> = {
   INVALID_FILE_TYPE: "This file type is not supported.",
   FILE_TOO_LARGE: "This image is larger than 15 MB.",
   BATCH_AUTH_REQUIRED: "Please verify again to continue this batch.",
+  AUTH_REQUIRED: "Sign in before processing your product images.",
+  INSUFFICIENT_CREDITS: "No image credits remain. Choose a plan to continue.",
   RATE_LIMITED: "Too many requests. Please wait and try again.",
   NO_FOREGROUND: "We could not detect a clear product in this image.",
   UPSTREAM_UNAVAILABLE: "Background removal is temporarily unavailable.",

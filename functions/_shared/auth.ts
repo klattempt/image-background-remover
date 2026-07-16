@@ -27,6 +27,30 @@ export function readCookie(request: Request, name: string) {
   return null;
 }
 
+export async function authenticatedUserId(request: Request, env: AppEnv) {
+  const token = readCookie(request, SESSION_COOKIE);
+  if (!token || !env.DB) return null;
+  const session = await env.DB.prepare(
+    `SELECT user_id AS userId FROM sessions
+     WHERE token_hash = ? AND expires_at > ?`,
+  ).bind(await sha256(token), new Date().toISOString()).first<{ userId: string }>();
+  return session?.userId ?? null;
+}
+
+export function safeReturnPath(value: string | null) {
+  if (!value) return "/";
+  try {
+    const url = new URL(value, "https://cutline.invalid");
+    if (url.origin !== "https://cutline.invalid") return "/";
+    if (url.pathname === "/account" || url.pathname === "/pricing" || url.pathname === "/checkout") {
+      return `${url.pathname}${url.search}`;
+    }
+  } catch {
+    return "/";
+  }
+  return "/";
+}
+
 export function secureCookie(name: string, value: string, maxAge: number) {
   return `${name}=${encodeURIComponent(value)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${maxAge}`;
 }

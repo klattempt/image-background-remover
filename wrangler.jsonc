@@ -7,7 +7,8 @@
   "vars": {
     "APP_ORIGIN": "https://imagesbackgroundsremover.shop",
     "GOOGLE_CLIENT_ID": "170314491594-2p92hmrco2hfs1np1nhuup1aooqascif.apps.googleusercontent.com",
-    "GOOGLE_REDIRECT_URI": "https://imagesbackgroundsremover.shop/api/auth/callback"
+    "GOOGLE_REDIRECT_URI": "https://imagesbackgroundsremover.shop/api/auth/callback",
+    "PAYPAL_ENVIRONMENT": "sandbox"
   },
   "d1_databases": [
     {

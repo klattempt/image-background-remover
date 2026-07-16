@@ -1,4 +1,5 @@
 import { apiError } from "../../lib/api-errors";
+import { authenticatedUserId } from "../_shared/auth";
 import {
   clientIp,
   createBatchToken,
@@ -44,6 +45,17 @@ export async function onRequestPost({ request, env }: FunctionContext) {
     return apiError("BATCH_AUTH_REQUIRED", 401);
   }
 
+  const userId = env.DB ? await authenticatedUserId(request, env) : null;
+  if (env.DB && !userId) return apiError("AUTH_REQUIRED", 401);
+  if (env.DB && userId) {
+    const balance = await env.DB.prepare(
+      `SELECT credits_remaining AS creditsRemaining, valid_until AS validUntil
+       FROM user_credits WHERE user_id = ?`,
+    ).bind(userId).first<{ creditsRemaining: number; validUntil: string | null }>();
+    const expired = balance?.validUntil ? new Date(balance.validUntil).getTime() <= Date.now() : false;
+    if (!balance || expired || balance.creditsRemaining < 1) return apiError("INSUFFICIENT_CREDITS", 402);
+  }
+
   const ip = clientIp(request);
   if (!(await verifyTurnstile(request, body.turnstileToken, ip, env.TURNSTILE_SECRET_KEY))) {
     return apiError("BATCH_AUTH_REQUIRED", 401);
@@ -51,7 +63,7 @@ export async function onRequestPost({ request, env }: FunctionContext) {
 
   const secret = getBatchSecret(env);
   if (!secret) return apiError("CONFIGURATION_ERROR", 503);
-  const { token, claims } = await createBatchToken(count, secret);
+  const { token, claims } = await createBatchToken(count, secret, userId ?? undefined);
   return Response.json(
     { token, batchId: claims.batchId, expiresAt: claims.expiresAt },
     { headers: { "Cache-Control": "no-store" } },

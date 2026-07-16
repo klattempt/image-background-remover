@@ -6,6 +6,10 @@ export type AppEnv = SecurityEnv & {
   GOOGLE_CLIENT_SECRET?: string;
   GOOGLE_REDIRECT_URI?: string;
   MAX_REQUESTS_PER_HOUR?: string;
+  PAYPAL_CLIENT_ID?: string;
+  PAYPAL_CLIENT_SECRET?: string;
+  PAYPAL_ENVIRONMENT?: string;
+  PAYPAL_WEBHOOK_ID?: string;
   REMOVE_BG_API_KEY?: string;
   TURNSTILE_SECRET_KEY?: string;
 };
@@ -13,7 +17,7 @@ export type AppEnv = SecurityEnv & {
 export type D1Statement = {
   bind: (...values: unknown[]) => D1Statement;
   first: <T = Record<string, unknown>>() => Promise<T | null>;
-  run: () => Promise<unknown>;
+  run: () => Promise<{ meta?: { changes?: number } }>;
 };
 
 export type D1Database = {

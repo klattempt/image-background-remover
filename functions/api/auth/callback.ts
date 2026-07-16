@@ -5,6 +5,7 @@ import {
   OAUTH_STATE_COOKIE,
   randomToken,
   readCookie,
+  safeReturnPath,
   secureCookie,
   SESSION_COOKIE,
   SESSION_SECONDS,
@@ -103,7 +104,7 @@ export async function onRequestGet({ request, env }: FunctionContext) {
       "INSERT INTO sessions (id, user_id, token_hash, expires_at, created_at) VALUES (?, ?, ?, ?, ?)",
     ).bind(crypto.randomUUID(), user.id, await sha256(sessionToken), expiresAt, now).run();
 
-    const returnTo = readCookie(request, OAUTH_RETURN_COOKIE) === "/account" ? "/account" : "/";
+    const returnTo = safeReturnPath(readCookie(request, OAUTH_RETURN_COOKIE));
     const headers = new Headers({
       Location: new URL(returnTo, request.url).toString(),
       "Cache-Control": "no-store",

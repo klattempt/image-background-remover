@@ -3,6 +3,7 @@ import {
   OAUTH_RETURN_COOKIE,
   OAUTH_STATE_COOKIE,
   randomToken,
+  safeReturnPath,
   secureCookie,
 } from "../../_shared/auth";
 import type { FunctionContext } from "../../_shared/types";
@@ -11,7 +12,7 @@ export async function onRequestGet({ request, env }: FunctionContext) {
   if (!env.GOOGLE_CLIENT_ID) return new Response("Google login is not configured.", { status: 503 });
 
   const requestedReturn = new URL(request.url).searchParams.get("return_to");
-  const returnTo = requestedReturn === "/account" ? requestedReturn : "/";
+  const returnTo = safeReturnPath(requestedReturn);
   const state = randomToken();
   const authorization = new URL("https://accounts.google.com/o/oauth2/v2/auth");
   authorization.searchParams.set("client_id", env.GOOGLE_CLIENT_ID);

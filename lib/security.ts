@@ -4,6 +4,7 @@ const decoder = new TextDecoder();
 export type BatchClaims = {
   batchId: string;
   count: number;
+  userId?: string;
   issuedAt: number;
   expiresAt: number;
 };
@@ -31,11 +32,12 @@ async function importHmacKey(secret: string) {
   );
 }
 
-export async function createBatchToken(count: number, secret: string) {
+export async function createBatchToken(count: number, secret: string, userId?: string) {
   const now = Math.floor(Date.now() / 1000);
   const claims: BatchClaims = {
     batchId: crypto.randomUUID(),
     count,
+    ...(userId ? { userId } : {}),
     issuedAt: now,
     expiresAt: now + 10 * 60,
   };
@@ -74,6 +76,7 @@ export async function verifyBatchToken(token: string, secret: string) {
     ) {
       return null;
     }
+    if (claims.userId !== undefined && (typeof claims.userId !== "string" || !claims.userId)) return null;
     return claims;
   } catch {
     return null;

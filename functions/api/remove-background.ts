@@ -22,8 +22,19 @@ export async function onRequestPost({ request, env }: FunctionContext) {
   const authorization = request.headers.get("authorization");
   const token = authorization?.startsWith("Bearer ") ? authorization.slice(7) : "";
   const secret = getBatchSecret(env);
-  if (!secret || !token || !(await verifyBatchToken(token, secret))) {
+  const claims = secret && token ? await verifyBatchToken(token, secret) : null;
+  if (!secret || !token || !claims) {
     return apiError("BATCH_AUTH_REQUIRED", 401);
+  }
+
+  if (env.DB) {
+    if (!claims.userId) return apiError("AUTH_REQUIRED", 401);
+    const balance = await env.DB.prepare(
+      `SELECT credits_remaining AS creditsRemaining, valid_until AS validUntil
+       FROM user_credits WHERE user_id = ?`,
+    ).bind(claims.userId).first<{ creditsRemaining: number; validUntil: string | null }>();
+    const expired = balance?.validUntil ? new Date(balance.validUntil).getTime() <= Date.now() : false;
+    if (!balance || expired || balance.creditsRemaining < 1) return apiError("INSUFFICIENT_CREDITS", 402);
   }
 
   const contentType = request.headers.get("content-type")?.split(";")[0]?.trim() ?? "";
@@ -69,6 +80,15 @@ export async function onRequestPost({ request, env }: FunctionContext) {
     }
     if (upstream.status >= 500) return apiError("UPSTREAM_UNAVAILABLE", 503);
     return apiError("INTERNAL_ERROR", 500);
+  }
+
+  if (env.DB && claims.userId) {
+    const result = await env.DB.prepare(
+      `UPDATE user_credits SET credits_remaining = credits_remaining - 1, updated_at = ?
+       WHERE user_id = ? AND credits_remaining > 0
+       AND (valid_until IS NULL OR valid_until > ?)`,
+    ).bind(new Date().toISOString(), claims.userId, new Date().toISOString()).run();
+    if (result.meta?.changes !== 1) return apiError("INSUFFICIENT_CREDITS", 402);
   }
 
   return new Response(upstream.body, {

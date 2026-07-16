@@ -2,17 +2,13 @@
 
 import Link from "next/link";
 import { ArrowRight, Check, LockKeyhole, ShieldCheck } from "lucide-react";
-import { useState } from "react";
-
-type BillingCycle = "monthly" | "annual";
+import { useEffect, useState } from "react";
 
 const plans = [
   {
     name: "Free",
     note: "Try the complete workflow",
     monthlyPrice: 0,
-    annualPrice: 0,
-    annualTotal: 0,
     allowance: "3 images once",
     description: "A no-cost first batch to see how Cutline fits your product workflow.",
     features: ["Up to 20 images per batch", "White JPG export", "Individual and ZIP downloads"],
@@ -23,8 +19,6 @@ const plans = [
     name: "Plus",
     note: "For growing stores",
     monthlyPrice: 19,
-    annualPrice: 17.1,
-    annualTotal: 205.2,
     allowance: "40 images / month",
     description: "Reliable background removal for regular product launches and catalog updates.",
     features: ["Everything in Free", "40 successful outputs monthly", "Retry failed images at no charge"],
@@ -35,8 +29,6 @@ const plans = [
     name: "Pro",
     note: "For active catalogs",
     monthlyPrice: 69,
-    annualPrice: 62.1,
-    annualTotal: 745.2,
     allowance: "200 images / month",
     description: "More monthly capacity for teams processing product photography at scale.",
     features: ["Everything in Plus", "200 successful outputs monthly", "Up to 20 images per batch"],
@@ -56,7 +48,14 @@ const comparisonRows = [
 ] as const;
 
 export function PricingPage() {
-  const [billingCycle, setBillingCycle] = useState<BillingCycle>("monthly");
+  const [cancelled, setCancelled] = useState(false);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setCancelled(new URLSearchParams(window.location.search).get("payment") === "cancelled");
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   return (
     <main className="pricing-page">
@@ -71,6 +70,12 @@ export function PricingPage() {
         </div>
       </nav>
 
+      {cancelled ? (
+        <div className="payment-banner" role="status">
+          Payment cancelled. No charge was made. You can choose a plan whenever you are ready.
+        </div>
+      ) : null}
+
       <header className="pricing-hero">
         <div>
           <div className="eyebrow"><span>02</span> Simple pricing</div>
@@ -81,29 +86,12 @@ export function PricingPage() {
             Every credit is one successfully processed image. Failed attempts cost nothing,
             and your files are processed in transit—never stored.
           </p>
-          <div className="billing-toggle" aria-label="Billing cycle">
-            <button
-              type="button"
-              aria-pressed={billingCycle === "monthly"}
-              onClick={() => setBillingCycle("monthly")}
-            >
-              Monthly
-            </button>
-            <button
-              type="button"
-              aria-pressed={billingCycle === "annual"}
-              onClick={() => setBillingCycle("annual")}
-            >
-              Annual <span>Save 10%</span>
-            </button>
-          </div>
+          <div className="one-time-note"><strong>One-time purchase</strong><span>30 days of image credits. No automatic renewal.</span></div>
         </div>
       </header>
 
       <section className="pricing-grid" aria-label="Pricing plans">
         {plans.map((plan, index) => {
-          const displayedPrice = billingCycle === "annual" ? plan.annualPrice : plan.monthlyPrice;
-
           return (
             <article className={`price-card${plan.featured ? " featured" : ""}`} key={plan.name}>
               <div className="plan-index">0{index + 1}</div>
@@ -112,15 +100,11 @@ export function PricingPage() {
               <h2>{plan.name}</h2>
               <div className="plan-price">
                 <span>$</span>
-                <strong>{displayedPrice.toFixed(displayedPrice % 1 === 0 ? 0 : 2)}</strong>
-                <small>{plan.name === "Free" ? "forever" : "/ month"}</small>
+                <strong>{plan.monthlyPrice.toFixed(0)}</strong>
+                <small>{plan.name === "Free" ? "forever" : "one time"}</small>
               </div>
               <div className="billing-detail">
-                {plan.name === "Free"
-                  ? "No card required"
-                  : billingCycle === "annual"
-                    ? `Billed $${plan.annualTotal.toFixed(2)} yearly`
-                    : "Billed monthly"}
+                {plan.name === "Free" ? "No card required" : "Credits valid for 30 days"}
               </div>
               <div className="plan-allowance">{plan.allowance}</div>
               <p className="plan-description">{plan.description}</p>
@@ -129,7 +113,11 @@ export function PricingPage() {
                   <li key={feature}><Check size={15} strokeWidth={2.5} /> {feature}</li>
                 ))}
               </ul>
-              <Link className="plan-cta" href="/register" prefetch={false}>
+              <Link
+                className="plan-cta"
+                href={plan.name === "Free" ? "/register" : `/checkout?plan=${plan.name.toLowerCase()}`}
+                prefetch={false}
+              >
                 {plan.cta} <ArrowRight size={17} />
               </Link>
             </article>
@@ -177,7 +165,7 @@ export function PricingPage() {
         <div className="rule-grid">
           <div><span>01</span><h3>Success uses one</h3><p>A credit is deducted only when a finished background-removed image is delivered.</p></div>
           <div><span>02</span><h3>Failures are free</h3><p>If processing fails, retry the image without losing a credit.</p></div>
-          <div><span>03</span><h3>Monthly reset</h3><p>Plus and Pro credits refresh each billing month and do not roll over.</p></div>
+          <div><span>03</span><h3>Valid for 30 days</h3><p>Plus and Pro are one-time purchases. Credits expire 30 days after payment.</p></div>
           <div><span>04</span><h3>Free means once</h3><p>The three Free credits are available once for each registered account.</p></div>
         </div>
       </section>

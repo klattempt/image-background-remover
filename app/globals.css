@@ -395,10 +395,10 @@ footer p { font-size: 11px; color: #aaaCA4; margin: 0; max-width: 330px; line-he
 .pricing-hero h1 { margin: 0; font: 400 clamp(58px, 7vw, 100px)/.9 Georgia, serif; letter-spacing: -.06em; }
 .pricing-hero h1 em { font-weight: 400; text-decoration: underline; text-decoration-color: var(--signal-dark); text-decoration-thickness: .11em; text-underline-offset: .05em; }
 .pricing-hero-copy > p { max-width: 540px; margin: 0 0 36px; color: #51534d; font-size: 17px; line-height: 1.7; }
-.billing-toggle { width: max-content; display: grid; grid-template-columns: 1fr 1fr; padding: 4px; border: 1px solid var(--ink); background: var(--panel); box-shadow: 5px 5px 0 var(--ink); }
-.billing-toggle button { min-height: 43px; padding: 0 17px; border: 0; background: transparent; cursor: pointer; font-size: 12px; font-weight: 800; }
-.billing-toggle button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
-.billing-toggle button span { margin-left: 5px; padding: 3px 5px; background: var(--signal); color: var(--ink); font: 700 9px "Courier New", monospace; text-transform: uppercase; }
+.one-time-note { width: max-content; max-width: 100%; padding: 13px 16px; border: 1px solid var(--ink); background: var(--panel); box-shadow: 5px 5px 0 var(--ink); display: grid; gap: 4px; }
+.one-time-note strong { font: 700 11px "Courier New", monospace; text-transform: uppercase; letter-spacing: .08em; }
+.one-time-note span { color: var(--muted); font-size: 11px; }
+.payment-banner { width: min(1320px, calc(100% - 64px)); margin: 22px auto -26px; padding: 13px 16px; border: 1px solid var(--ink); background: #fff1d2; font-size: 12px; line-height: 1.5; }
 
 .pricing-grid { width: min(1320px, calc(100% - 64px)); margin: 0 auto 86px; display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--ink); background: var(--panel); box-shadow: 12px 12px 0 var(--ink); }
 .price-card { min-width: 0; min-height: 650px; padding: 34px; position: relative; display: flex; flex-direction: column; border-right: 1px solid var(--ink); }
@@ -462,6 +462,32 @@ footer p { font-size: 11px; color: #aaaCA4; margin: 0; max-width: 330px; line-he
 .pricing-final .plan-cta { width: 100%; }
 .pricing-footer { min-height: 160px; }
 
+.checkout-page { min-height: 100vh; }
+.checkout-layout { width: min(1180px, calc(100% - 64px)); margin: 0 auto; padding: clamp(60px, 9vw, 112px) 0; display: grid; grid-template-columns: 1fr minmax(390px, .72fr); gap: clamp(50px, 9vw, 135px); align-items: center; }
+.checkout-summary h1 { margin: 0; font: 400 clamp(54px, 6vw, 86px)/.92 Georgia, serif; letter-spacing: -.055em; }
+.checkout-summary h1 em { font-weight: 400; text-decoration: underline; text-decoration-color: var(--signal-dark); text-decoration-thickness: .11em; text-underline-offset: .06em; }
+.checkout-assurance { max-width: 520px; margin-top: 35px; padding-top: 20px; border-top: 1px solid var(--ink); display: flex; gap: 11px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+.checkout-assurance svg { flex: none; }
+.checkout-card { background: var(--panel); border: 1px solid var(--ink); box-shadow: 10px 10px 0 var(--ink); padding: 42px; }
+.checkout-plan { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 28px; }
+.checkout-plan small { color: var(--muted); font: 9px "Courier New", monospace; text-transform: uppercase; letter-spacing: .1em; }
+.checkout-plan h2 { margin: 7px 0 0; font: 400 34px Georgia, serif; }
+.checkout-plan > strong { font: 400 37px Georgia, serif; }
+.checkout-details { margin: 0 0 27px; border-top: 1px solid var(--line); }
+.checkout-details div { padding: 12px 0; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.checkout-details dt { color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: .07em; }
+.checkout-details dd { margin: 0; text-align: right; font-size: 11px; font-weight: 700; }
+.checkout-status { min-height: 54px; display: grid; place-items: center; color: var(--muted); font: 10px "Courier New", monospace; text-transform: uppercase; letter-spacing: .1em; }
+.paypal-button-container { min-height: 48px; margin-top: 16px; }
+.checkout-secure { margin: 17px 0 -14px; display: flex; align-items: center; justify-content: center; gap: 7px; color: var(--muted); font-size: 9px; }
+.payment-result-page { min-height: 100vh; display: grid; place-items: center; padding: 40px 20px; }
+.payment-result-card { width: min(660px, 100%); padding: 54px; border: 1px solid var(--ink); background: var(--panel); box-shadow: 12px 12px 0 var(--ink); }
+.payment-result-card h1 { margin: 13px 0 25px; font: 400 clamp(45px, 7vw, 68px)/.94 Georgia, serif; letter-spacing: -.05em; }
+.payment-result-card h1 em { font-weight: 400; text-decoration: underline; text-decoration-color: var(--signal-dark); text-decoration-thickness: .11em; }
+.payment-result-card > p { color: var(--muted); font-size: 14px; line-height: 1.7; }
+.payment-order-id { margin: 27px 0; padding: 13px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); color: var(--muted); font: 9px "Courier New", monospace; overflow-wrap: anywhere; }
+.payment-result-actions { margin-top: 32px; display: grid; grid-template-columns: 1fr auto; gap: 14px; }
+
 @media (max-width: 1100px) {
   .hero { grid-template-columns: 1fr; }
   .hero-copy { position: static; padding-top: 0; }
@@ -476,6 +502,7 @@ footer p { font-size: 11px; color: #aaaCA4; margin: 0; max-width: 330px; line-he
   .rule-grid { grid-template-columns: repeat(2, 1fr); gap: 42px 0; }
   .rule-grid > div:nth-child(2) { border-right: 0; }
   .pricing-final { grid-template-columns: 1fr; }
+  .checkout-layout { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 720px) {
@@ -507,7 +534,7 @@ footer p { font-size: 11px; color: #aaaCA4; margin: 0; max-width: 330px; line-he
   .auth-card, .account-card { padding: 30px 24px; box-shadow: 7px 7px 0 var(--ink); }
   .account-heading { padding-top: 0; }
   .account-actions { grid-template-columns: 1fr; }
-  .pricing-nav, .pricing-hero, .pricing-grid, .pricing-trust, .comparison-section, .credit-rules, .pricing-final { width: min(100% - 32px, 1320px); }
+  .pricing-nav, .pricing-hero, .pricing-grid, .pricing-trust, .comparison-section, .credit-rules, .pricing-final, .payment-banner { width: min(100% - 32px, 1320px); }
   .pricing-nav { height: 64px; }
   .pricing-nav-actions { gap: 13px; }
   .pricing-hero { padding: 58px 0 46px; gap: 40px; }
@@ -529,6 +556,9 @@ footer p { font-size: 11px; color: #aaaCA4; margin: 0; max-width: 330px; line-he
   .rule-grid > div:last-child { border-bottom: 0; }
   .rule-grid h3 { margin: 24px 0 10px; }
   .pricing-final { margin-bottom: 70px; padding: 36px 25px; gap: 38px; box-shadow: 7px 7px 0 var(--ink); }
+  .checkout-layout { width: min(100% - 32px, 1180px); padding: 52px 0; gap: 42px; }
+  .checkout-card, .payment-result-card { padding: 30px 24px; box-shadow: 7px 7px 0 var(--ink); }
+  .payment-result-actions { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 440px) {

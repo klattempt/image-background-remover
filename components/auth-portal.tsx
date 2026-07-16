@@ -23,6 +23,10 @@ type AuthUser = {
   createdAt: string;
   lastLoginAt: string;
   authProvider: string;
+  plan: string | null;
+  creditsRemaining: number | null;
+  creditsTotal: number | null;
+  validUntil: string | null;
 };
 
 type CredentialMode = "register" | "login";
@@ -36,10 +40,13 @@ export function AuthPortal({ mode }: { mode: "register" | "account" }) {
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [returnTo, setReturnTo] = useState("/account");
 
   useEffect(() => {
     const hashTimer = window.setTimeout(() => {
       if (window.location.hash === "#login") setCredentialMode("login");
+      const requestedReturn = new URLSearchParams(window.location.search).get("return_to");
+      if (requestedReturn?.startsWith("/checkout?plan=")) setReturnTo(requestedReturn);
     }, 0);
     void fetch("/api/auth/session", { headers: { Accept: "application/json" } })
       .then((response) => response.json() as Promise<{ user: AuthUser | null }>)
@@ -70,7 +77,7 @@ export function AuthPortal({ mode }: { mode: "register" | "account" }) {
         body: JSON.stringify({ email, password }),
       });
       if (response.ok) {
-        window.location.href = "/account";
+        window.location.href = returnTo;
         return;
       }
 
@@ -193,7 +200,7 @@ export function AuthPortal({ mode }: { mode: "register" | "account" }) {
                 </form>
 
                 <div className="auth-divider"><span>or</span></div>
-                <a className="google-button" href="/api/auth/google?return_to=/account">
+                <a className="google-button" href={`/api/auth/google?return_to=${encodeURIComponent(returnTo)}`}>
                   <span className="google-mark" aria-hidden="true">G</span>
                   Continue with Google
                 </a>
@@ -235,6 +242,9 @@ export function AuthPortal({ mode }: { mode: "register" | "account" }) {
               </div>
               <dl className="profile-details">
                 <div><dt>Email</dt><dd>{user.email}</dd></div>
+                <div><dt>Current plan</dt><dd>{user.plan ? user.plan.charAt(0).toUpperCase() + user.plan.slice(1) : "Free"}</dd></div>
+                <div><dt>Image credits</dt><dd>{user.creditsRemaining ?? 0} / {user.creditsTotal ?? 3} remaining</dd></div>
+                <div><dt>Valid until</dt><dd>{user.validUntil ? formatDate(user.validUntil) : "No expiry"}</dd></div>
                 <div><dt>Member since</dt><dd>{formatDate(user.createdAt)}</dd></div>
                 <div><dt>Last sign in</dt><dd>{formatDate(user.lastLoginAt)}</dd></div>
               </dl>
