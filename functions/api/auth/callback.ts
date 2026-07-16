@@ -59,28 +59,42 @@ export async function onRequestGet({ request, env }: FunctionContext) {
     }
 
     const now = new Date().toISOString();
-    await env.DB.prepare(
-      `INSERT INTO users (id, google_sub, email, name, avatar_url, created_at, updated_at, last_login_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-       ON CONFLICT(google_sub) DO UPDATE SET
-         email = excluded.email,
-         name = excluded.name,
-         avatar_url = excluded.avatar_url,
-         updated_at = excluded.updated_at,
-         last_login_at = excluded.last_login_at`,
-    ).bind(
-      crypto.randomUUID(),
-      profile.sub,
-      profile.email,
-      profile.name ?? null,
-      profile.picture ?? null,
-      now,
-      now,
-      now,
-    ).run();
-    const user = await env.DB.prepare("SELECT id FROM users WHERE google_sub = ?")
+    let user = await env.DB.prepare("SELECT id FROM users WHERE google_sub = ?")
       .bind(profile.sub)
       .first<{ id: string }>();
+    user ??= await env.DB.prepare("SELECT id FROM users WHERE lower(email) = ?")
+      .bind(profile.email.toLowerCase())
+      .first<{ id: string }>();
+
+    if (user) {
+      await env.DB.prepare(
+        `UPDATE users SET google_sub = ?, email = ?, name = ?, avatar_url = ?,
+         updated_at = ?, last_login_at = ? WHERE id = ?`,
+      ).bind(
+        profile.sub,
+        profile.email,
+        profile.name ?? null,
+        profile.picture ?? null,
+        now,
+        now,
+        user.id,
+      ).run();
+    } else {
+      user = { id: crypto.randomUUID() };
+      await env.DB.prepare(
+        `INSERT INTO users (id, google_sub, email, name, avatar_url, created_at, updated_at, last_login_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      ).bind(
+        user.id,
+        profile.sub,
+        profile.email,
+        profile.name ?? null,
+        profile.picture ?? null,
+        now,
+        now,
+        now,
+      ).run();
+    }
     if (!user) return authFailure(request, "database_failed");
 
     const sessionToken = randomToken();

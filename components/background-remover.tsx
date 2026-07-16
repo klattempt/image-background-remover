@@ -542,7 +542,7 @@ export function BackgroundRemover() {
           ) : (
             <div className="signed-out-actions">
               <a className="register-link" href="/register">Register</a>
-              <a className="login-link" href="/api/auth/google" aria-busy={!authLoaded}>
+              <a className="login-link" href="/register#login" aria-busy={!authLoaded}>
                 <LogIn size={15} /> Sign in
               </a>
             </div>

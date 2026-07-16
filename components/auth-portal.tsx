@@ -1,8 +1,19 @@
 "use client";
 
-import { ArrowLeft, ArrowRight, Check, LogIn, LogOut, ShieldCheck, UserRound } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Eye,
+  EyeOff,
+  LockKeyhole,
+  LogIn,
+  LogOut,
+  Mail,
+  ShieldCheck,
+  UserRound,
+} from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
 
 type AuthUser = {
   id: string;
@@ -11,23 +22,80 @@ type AuthUser = {
   avatarUrl: string | null;
   createdAt: string;
   lastLoginAt: string;
+  authProvider: string;
 };
+
+type CredentialMode = "register" | "login";
 
 export function AuthPortal({ mode }: { mode: "register" | "account" }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loaded, setLoaded] = useState(false);
+  const [credentialMode, setCredentialMode] = useState<CredentialMode>("register");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
   useEffect(() => {
+    const hashTimer = window.setTimeout(() => {
+      if (window.location.hash === "#login") setCredentialMode("login");
+    }, 0);
     void fetch("/api/auth/session", { headers: { Accept: "application/json" } })
       .then((response) => response.json() as Promise<{ user: AuthUser | null }>)
       .then(({ user: sessionUser }) => setUser(sessionUser))
       .catch(() => setUser(null))
       .finally(() => setLoaded(true));
+    return () => window.clearTimeout(hashTimer);
   }, []);
 
   async function logout() {
     const response = await fetch("/api/auth/logout", { method: "POST" });
     if (response.ok) window.location.href = "/";
+  }
+
+  async function submitCredentials(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setFormError(null);
+    if (password.length < 8) {
+      setFormError("Password must contain at least 8 characters.");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const response = await fetch(`/api/auth/${credentialMode}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      if (response.ok) {
+        window.location.href = "/account";
+        return;
+      }
+
+      const body = (await response.json()) as { error?: { code?: string } };
+      const code = body.error?.code;
+      setFormError(
+        code === "EMAIL_IN_USE"
+          ? "An account already uses this email. Sign in instead."
+          : code === "RATE_LIMITED"
+            ? "Too many attempts. Please wait and try again."
+            : credentialMode === "login"
+              ? "Email or password is incorrect."
+              : "Check your email and password, then try again.",
+      );
+    } catch {
+      setFormError("The account service is unavailable. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  function switchCredentialMode(nextMode: CredentialMode) {
+    setCredentialMode(nextMode);
+    setFormError(null);
+    window.history.replaceState({}, "", nextMode === "login" ? "/register#login" : "/register");
   }
 
   return (
@@ -44,37 +112,104 @@ export function AuthPortal({ mode }: { mode: "register" | "account" }) {
         <section className="auth-layout">
           <div className="auth-intro">
             <div className="eyebrow"><span>01</span> Create your workspace</div>
-            <h1>One account.<br /><em>No extra password.</em></h1>
+            <h1>One account.<br /><em>Your way in.</em></h1>
             <p>
-              Register with Google to keep your Cutline identity simple. Your images still move
+              Create an account with your email, or continue with Google. Your images still move
               through the processing pipeline without being stored.
             </p>
           </div>
 
           <div className="auth-card">
             <div className="auth-card-index">REG / 01</div>
-            <div className="auth-icon"><UserRound size={30} /></div>
-            <h2>{user ? "Your account is ready." : "Register with Google"}</h2>
-            <p>
-              {user
-                ? `You are signed in as ${user.email}.`
-                : "Your verified Google email creates your account securely in one step."}
-            </p>
             {user ? (
-              <Link className="auth-primary" href="/account">
-                Open personal center <ArrowRight size={17} />
-              </Link>
+              <>
+                <div className="auth-icon"><UserRound size={30} /></div>
+                <h2>Your account is ready.</h2>
+                <p>You are signed in as {user.email}.</p>
+                <Link className="auth-primary" href="/account">
+                  Open personal center <ArrowRight size={17} />
+                </Link>
+              </>
             ) : (
-              <a className="auth-primary" href="/api/auth/google?return_to=/account">
-                <LogIn size={17} /> Continue with Google
-              </a>
+              <>
+                <div className="credential-heading">
+                  <div className="auth-icon"><UserRound size={27} /></div>
+                  <div>
+                    <small>{credentialMode === "register" ? "New workspace" : "Welcome back"}</small>
+                    <h2>{credentialMode === "register" ? "Create your account" : "Sign in to Cutline"}</h2>
+                  </div>
+                </div>
+
+                <form className="credential-form" onSubmit={(event) => void submitCredentials(event)}>
+                  <label htmlFor="auth-email">Email address</label>
+                  <div className="credential-input">
+                    <Mail size={16} />
+                    <input
+                      id="auth-email"
+                      name="email"
+                      type="email"
+                      autoComplete="email"
+                      placeholder="you@company.com"
+                      value={email}
+                      onChange={(event) => setEmail(event.target.value)}
+                      required
+                    />
+                  </div>
+
+                  <label htmlFor="auth-password">Password</label>
+                  <div className="credential-input">
+                    <LockKeyhole size={16} />
+                    <input
+                      id="auth-password"
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      autoComplete={credentialMode === "register" ? "new-password" : "current-password"}
+                      placeholder="At least 8 characters"
+                      minLength={8}
+                      maxLength={128}
+                      value={password}
+                      onChange={(event) => setPassword(event.target.value)}
+                      required
+                    />
+                    <button
+                      type="button"
+                      className="password-toggle"
+                      onClick={() => setShowPassword((visible) => !visible)}
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+
+                  {formError ? <div className="credential-error" role="alert">{formError}</div> : null}
+                  <button className="auth-primary" type="submit" disabled={submitting}>
+                    {submitting
+                      ? "Please wait…"
+                      : credentialMode === "register"
+                        ? "Create account"
+                        : "Sign in"}
+                    {!submitting ? <ArrowRight size={17} /> : null}
+                  </button>
+                </form>
+
+                <div className="auth-divider"><span>or</span></div>
+                <a className="google-button" href="/api/auth/google?return_to=/account">
+                  <span className="google-mark" aria-hidden="true">G</span>
+                  Continue with Google
+                </a>
+
+                <small className="credential-switch">
+                  {credentialMode === "register" ? "Already registered?" : "New to Cutline?"}{" "}
+                  <button
+                    type="button"
+                    onClick={() => switchCredentialMode(credentialMode === "register" ? "login" : "register")}
+                  >
+                    {credentialMode === "register" ? "Sign in" : "Create an account"}
+                  </button>
+                </small>
+                <p className="credential-privacy"><ShieldCheck size={14} /> Passwords are encrypted. Images are never saved.</p>
+              </>
             )}
-            <div className="auth-benefits">
-              <span><Check size={14} /> No new password</span>
-              <span><Check size={14} /> Verified email only</span>
-              <span><ShieldCheck size={14} /> Images are never saved</span>
-            </div>
-            <small>Already registered? <a href="/api/auth/google?return_to=/account">Sign in</a></small>
           </div>
         </section>
       ) : (
@@ -96,7 +231,7 @@ export function AuthPortal({ mode }: { mode: "register" | "account" }) {
                 ) : (
                   <div className="profile-placeholder"><UserRound size={32} /></div>
                 )}
-                <div><small>Google account</small><h2>{user.name ?? "Cutline user"}</h2></div>
+                <div><small>{user.authProvider}</small><h2>{user.name ?? "Cutline user"}</h2></div>
               </div>
               <dl className="profile-details">
                 <div><dt>Email</dt><dd>{user.email}</dd></div>
@@ -115,10 +250,10 @@ export function AuthPortal({ mode }: { mode: "register" | "account" }) {
             <div className="account-card signed-out-card">
               <div className="auth-icon"><UserRound size={30} /></div>
               <h2>Sign in to view your account.</h2>
-              <p>Your personal center is available after registering or signing in with Google.</p>
-              <a className="auth-primary" href="/api/auth/google?return_to=/account">
-                <LogIn size={17} /> Sign in with Google
-              </a>
+              <p>Your personal center is available after registering or signing in.</p>
+              <Link className="auth-primary" href="/register#login">
+                <LogIn size={17} /> Sign in
+              </Link>
               <small>New to Cutline? <Link href="/register">Create an account</Link></small>
             </div>
           )}
