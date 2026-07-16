@@ -525,6 +525,7 @@ export function BackgroundRemover() {
         </a>
         <div className="nav-meta">
           <span><ShieldCheck size={15} /> No image storage</span>
+          <a href="/pricing">Pricing</a>
           <a href="#faq">FAQ</a>
           {authLoaded && authUser ? (
             <div className="account-menu">

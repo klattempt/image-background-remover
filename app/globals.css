@@ -385,6 +385,83 @@ footer p { font-size: 11px; color: #aaaCA4; margin: 0; max-width: 330px; line-he
 .account-loading { display: grid; place-items: center; color: var(--muted); font: 11px "Courier New", monospace; text-transform: uppercase; letter-spacing: .12em; }
 .signed-out-card { align-self: center; }
 
+.pricing-page { min-height: 100vh; }
+.pricing-nav { width: min(1320px, calc(100% - 64px)); height: 76px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--ink); }
+.pricing-nav-actions { display: flex; align-items: center; gap: 26px; font-size: 12px; }
+.pricing-nav-actions > a:first-child { border-bottom: 1px solid currentColor; }
+.pricing-nav-actions .login-link { padding: 9px 12px; border: 1px solid var(--ink); font-weight: 800; }
+.pricing-hero { width: min(1320px, calc(100% - 64px)); margin: 0 auto; padding: 88px 0 64px; display: grid; grid-template-columns: 1.12fr .88fr; gap: clamp(50px, 8vw, 130px); align-items: end; }
+.pricing-hero .eyebrow { margin-bottom: 30px; }
+.pricing-hero h1 { margin: 0; font: 400 clamp(58px, 7vw, 100px)/.9 Georgia, serif; letter-spacing: -.06em; }
+.pricing-hero h1 em { font-weight: 400; text-decoration: underline; text-decoration-color: var(--signal-dark); text-decoration-thickness: .11em; text-underline-offset: .05em; }
+.pricing-hero-copy > p { max-width: 540px; margin: 0 0 36px; color: #51534d; font-size: 17px; line-height: 1.7; }
+.billing-toggle { width: max-content; display: grid; grid-template-columns: 1fr 1fr; padding: 4px; border: 1px solid var(--ink); background: var(--panel); box-shadow: 5px 5px 0 var(--ink); }
+.billing-toggle button { min-height: 43px; padding: 0 17px; border: 0; background: transparent; cursor: pointer; font-size: 12px; font-weight: 800; }
+.billing-toggle button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.billing-toggle button span { margin-left: 5px; padding: 3px 5px; background: var(--signal); color: var(--ink); font: 700 9px "Courier New", monospace; text-transform: uppercase; }
+
+.pricing-grid { width: min(1320px, calc(100% - 64px)); margin: 0 auto 86px; display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--ink); background: var(--panel); box-shadow: 12px 12px 0 var(--ink); }
+.price-card { min-width: 0; min-height: 650px; padding: 34px; position: relative; display: flex; flex-direction: column; border-right: 1px solid var(--ink); }
+.price-card:last-child { border-right: 0; }
+.price-card.featured { background: var(--signal); }
+.plan-index { position: absolute; right: 20px; top: 18px; color: var(--muted); font: 10px "Courier New", monospace; letter-spacing: .12em; }
+.popular-tag { position: absolute; right: 0; top: -29px; height: 29px; padding: 0 13px; display: flex; align-items: center; background: var(--ink); color: var(--signal); font: 700 9px "Courier New", monospace; letter-spacing: .1em; text-transform: uppercase; }
+.plan-note { margin: 0 0 12px; color: var(--muted); font: 700 10px "Courier New", monospace; text-transform: uppercase; letter-spacing: .1em; }
+.featured .plan-note { color: #545d26; }
+.price-card h2 { margin: 0 0 38px; font: 400 43px/1 Georgia, serif; letter-spacing: -.035em; }
+.plan-price { min-height: 74px; display: flex; align-items: flex-start; }
+.plan-price > span { padding-top: 10px; font: 400 25px Georgia, serif; }
+.plan-price strong { font: 400 70px/.9 Georgia, serif; letter-spacing: -.055em; }
+.plan-price small { align-self: flex-end; padding: 0 0 9px 8px; color: var(--muted); font-size: 11px; }
+.billing-detail { min-height: 34px; margin-top: 8px; color: var(--muted); font-size: 10px; }
+.featured .billing-detail, .featured .plan-price small { color: #545d26; }
+.plan-allowance { padding: 16px 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); font: 700 12px "Courier New", monospace; letter-spacing: .04em; text-transform: uppercase; }
+.plan-description { min-height: 72px; margin: 22px 0 17px; color: var(--muted); font-size: 13px; line-height: 1.65; }
+.featured .plan-description { color: #3f431f; }
+.plan-features { list-style: none; padding: 0; margin: 0 0 30px; display: grid; gap: 13px; }
+.plan-features li { display: flex; align-items: flex-start; gap: 9px; font-size: 12px; line-height: 1.4; }
+.plan-features svg { flex: none; margin-top: 1px; }
+.plan-cta { min-height: 54px; margin-top: auto; padding: 0 17px; display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--ink); background: var(--ink); color: var(--paper); box-shadow: 4px 4px 0 #8c8e85; font-size: 12px; font-weight: 800; transition: transform .16s ease, box-shadow .16s ease; }
+.plan-cta:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0 #8c8e85; }
+.featured .plan-cta { background: var(--panel); color: var(--ink); box-shadow: 4px 4px 0 var(--ink); }
+
+.pricing-trust { width: min(1320px, calc(100% - 64px)); margin: 0 auto 120px; display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
+.pricing-trust > div { min-height: 114px; padding: 24px 28px; display: flex; align-items: center; gap: 18px; border-right: 1px solid var(--ink); }
+.pricing-trust > div:last-child { border-right: 0; }
+.pricing-trust svg, .trust-number { flex: none; color: #7d8076; }
+.trust-number { min-width: 26px; font: 400 29px Georgia, serif; }
+.pricing-trust span { color: var(--muted); font-size: 11px; line-height: 1.55; }
+.pricing-trust strong { display: block; margin-bottom: 4px; color: var(--ink); font: 400 20px Georgia, serif; }
+
+.comparison-section, .credit-rules { width: min(1320px, calc(100% - 64px)); margin: 0 auto 120px; }
+.comparison-heading { margin-bottom: 44px; display: grid; grid-template-columns: 1fr .65fr; gap: 60px; align-items: end; }
+.comparison-heading h2 { margin: 0; font: 400 clamp(44px, 5vw, 70px)/.95 Georgia, serif; letter-spacing: -.05em; }
+.comparison-heading > p { max-width: 480px; margin: 0 0 5px; color: var(--muted); font-size: 14px; line-height: 1.7; }
+.comparison-scroll { overflow-x: auto; border: 1px solid var(--ink); background: var(--panel); }
+.pricing-table { width: 100%; min-width: 720px; border-collapse: collapse; text-align: left; }
+.pricing-table th, .pricing-table td { height: 58px; padding: 0 22px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); font-size: 12px; }
+.pricing-table tr:last-child th, .pricing-table tr:last-child td { border-bottom: 0; }
+.pricing-table th:last-child, .pricing-table td:last-child { border-right: 0; }
+.pricing-table thead th { height: 66px; background: var(--ink); color: var(--paper); font: 400 20px Georgia, serif; }
+.pricing-table thead th:last-child { background: var(--signal); color: var(--ink); }
+.pricing-table tbody th { width: 37%; color: var(--muted); font-weight: 500; }
+.pricing-table td svg { color: var(--ink); }
+
+.credit-rules { padding-top: 26px; border-top: 1px solid var(--ink); }
+.rule-grid { display: grid; grid-template-columns: repeat(4, 1fr); margin-top: 32px; }
+.rule-grid > div { min-height: 190px; padding: 0 27px; border-right: 1px solid var(--line); }
+.rule-grid > div:first-child { padding-left: 0; }
+.rule-grid > div:last-child { padding-right: 0; border-right: 0; }
+.rule-grid span { color: var(--muted); font: 10px "Courier New", monospace; }
+.rule-grid h3 { margin: 42px 0 13px; font: 400 21px Georgia, serif; }
+.rule-grid p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.65; }
+
+.pricing-final { width: min(1320px, calc(100% - 64px)); margin: 0 auto 120px; padding: 54px; display: grid; grid-template-columns: 1.2fr .8fr; gap: 70px; align-items: end; border: 1px solid var(--ink); background: var(--signal); box-shadow: 12px 12px 0 var(--ink); }
+.pricing-final h2 { margin: 0; font: 400 clamp(42px, 5vw, 67px)/.95 Georgia, serif; letter-spacing: -.05em; }
+.pricing-final > div:last-child > p { margin: 0 0 28px; color: #42461f; font-size: 14px; line-height: 1.65; }
+.pricing-final .plan-cta { width: 100%; }
+.pricing-footer { min-height: 160px; }
+
 @media (max-width: 1100px) {
   .hero { grid-template-columns: 1fr; }
   .hero-copy { position: static; padding-top: 0; }
@@ -393,6 +470,12 @@ footer p { font-size: 11px; color: #aaaCA4; margin: 0; max-width: 330px; line-he
   .auth-layout, .account-layout { grid-template-columns: 1fr; }
   .auth-intro, .account-heading { max-width: 780px; }
   .auth-card, .account-card { max-width: 620px; }
+  .pricing-hero { grid-template-columns: 1fr; align-items: start; }
+  .pricing-hero-copy { max-width: 620px; }
+  .price-card { padding: 27px; }
+  .rule-grid { grid-template-columns: repeat(2, 1fr); gap: 42px 0; }
+  .rule-grid > div:nth-child(2) { border-right: 0; }
+  .pricing-final { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 720px) {
@@ -424,6 +507,28 @@ footer p { font-size: 11px; color: #aaaCA4; margin: 0; max-width: 330px; line-he
   .auth-card, .account-card { padding: 30px 24px; box-shadow: 7px 7px 0 var(--ink); }
   .account-heading { padding-top: 0; }
   .account-actions { grid-template-columns: 1fr; }
+  .pricing-nav, .pricing-hero, .pricing-grid, .pricing-trust, .comparison-section, .credit-rules, .pricing-final { width: min(100% - 32px, 1320px); }
+  .pricing-nav { height: 64px; }
+  .pricing-nav-actions { gap: 13px; }
+  .pricing-hero { padding: 58px 0 46px; gap: 40px; }
+  .pricing-hero h1 { font-size: clamp(49px, 14vw, 72px); }
+  .pricing-grid { grid-template-columns: 1fr; margin-bottom: 70px; box-shadow: 7px 7px 0 var(--ink); }
+  .price-card { min-height: auto; padding: 32px 25px; border-right: 0; border-bottom: 1px solid var(--ink); }
+  .price-card:last-child { border-bottom: 0; }
+  .popular-tag { top: 0; }
+  .plan-description { min-height: 0; }
+  .plan-features { margin-bottom: 28px; }
+  .plan-cta { margin-top: 8px; }
+  .pricing-trust { grid-template-columns: 1fr; margin-bottom: 85px; }
+  .pricing-trust > div { border-right: 0; border-bottom: 1px solid var(--ink); }
+  .pricing-trust > div:last-child { border-bottom: 0; }
+  .comparison-section, .credit-rules { margin-bottom: 85px; }
+  .comparison-heading { grid-template-columns: 1fr; gap: 25px; }
+  .rule-grid { grid-template-columns: 1fr; gap: 0; }
+  .rule-grid > div, .rule-grid > div:first-child, .rule-grid > div:last-child { min-height: 0; padding: 24px 0; border-right: 0; border-bottom: 1px solid var(--line); }
+  .rule-grid > div:last-child { border-bottom: 0; }
+  .rule-grid h3 { margin: 24px 0 10px; }
+  .pricing-final { margin-bottom: 70px; padding: 36px 25px; gap: 38px; box-shadow: 7px 7px 0 var(--ink); }
 }
 
 @media (max-width: 440px) {
