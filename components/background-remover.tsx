@@ -540,12 +540,9 @@ export function BackgroundRemover() {
               </button>
             </div>
           ) : (
-            <div className="signed-out-actions">
-              <a className="register-link" href="/register">Register</a>
-              <a className="login-link" href="/register#login" aria-busy={!authLoaded}>
-                <LogIn size={15} /> Sign in
-              </a>
-            </div>
+            <a className="login-link" href="/register#login" aria-busy={!authLoaded}>
+              <LogIn size={15} /> Sign in
+            </a>
           )}
         </div>
       </nav>
