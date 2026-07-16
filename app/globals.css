@@ -477,8 +477,20 @@ footer p { font-size: 11px; color: #aaaCA4; margin: 0; max-width: 330px; line-he
 .checkout-details div { padding: 12px 0; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 .checkout-details dt { color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: .07em; }
 .checkout-details dd { margin: 0; text-align: right; font-size: 11px; font-weight: 700; }
+.payment-methods { display: grid; grid-template-columns: 1fr 1fr; margin-bottom: 18px; border: 1px solid var(--ink); background: var(--paper); }
+.payment-methods button { min-height: 47px; padding: 0 13px; border: 0; border-right: 1px solid var(--ink); background: transparent; cursor: pointer; font-size: 11px; font-weight: 800; }
+.payment-methods button:last-child { border-right: 0; }
+.payment-methods button[aria-selected="true"] { background: var(--ink); color: var(--paper); }
+.payment-methods button span { margin-left: 5px; padding: 3px 5px; background: var(--signal); color: var(--ink); font: 700 8px "Courier New", monospace; text-transform: uppercase; }
 .checkout-status { min-height: 54px; display: grid; place-items: center; color: var(--muted); font: 10px "Courier New", monospace; text-transform: uppercase; letter-spacing: .1em; }
 .paypal-button-container { min-height: 48px; margin-top: 16px; }
+.creem-checkout-panel { display: grid; gap: 13px; }
+.creem-checkout-panel > p { margin: 0; padding: 12px 13px; border: 1px solid #b99332; background: #fff1c8; color: #5d4716; font-size: 10px; line-height: 1.55; }
+.creem-checkout-panel > p strong { margin-right: 7px; font: 800 9px "Courier New", monospace; letter-spacing: .08em; }
+.creem-checkout-panel > small { color: var(--danger); font-size: 9px; text-align: center; }
+.creem-checkout-button { min-height: 52px; display: flex; align-items: center; justify-content: center; gap: 10px; border: 1px solid var(--ink); background: var(--signal); box-shadow: 4px 4px 0 var(--ink); cursor: pointer; font-size: 12px; font-weight: 900; transition: transform .16s ease, box-shadow .16s ease; }
+.creem-checkout-button:hover:not(:disabled) { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--ink); }
+.creem-checkout-button:disabled { opacity: .45; cursor: not-allowed; }
 .checkout-secure { margin: 17px 0 -14px; display: flex; align-items: center; justify-content: center; gap: 7px; color: var(--muted); font-size: 9px; }
 .payment-result-page { min-height: 100vh; display: grid; place-items: center; padding: 40px 20px; }
 .payment-result-card { width: min(660px, 100%); padding: 54px; border: 1px solid var(--ink); background: var(--panel); box-shadow: 12px 12px 0 var(--ink); }

@@ -8,7 +8,10 @@
     "APP_ORIGIN": "https://imagesbackgroundsremover.shop",
     "GOOGLE_CLIENT_ID": "170314491594-2p92hmrco2hfs1np1nhuup1aooqascif.apps.googleusercontent.com",
     "GOOGLE_REDIRECT_URI": "https://imagesbackgroundsremover.shop/api/auth/callback",
-    "PAYPAL_ENVIRONMENT": "live"
+    "PAYPAL_ENVIRONMENT": "live",
+    "CREEM_ENVIRONMENT": "test",
+    "CREEM_PLUS_PRODUCT_ID": "prod_1XXsfS0Ss6Ri96ODnBb9e2",
+    "CREEM_PRO_PRODUCT_ID": "prod_2I2BKWcmGOe0RGWDObdRUe"
   },
   "d1_databases": [
     {

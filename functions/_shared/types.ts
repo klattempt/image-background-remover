@@ -1,6 +1,11 @@
 import type { SecurityEnv } from "../../lib/security";
 
 export type AppEnv = SecurityEnv & {
+  CREEM_API_KEY?: string;
+  CREEM_ENVIRONMENT?: string;
+  CREEM_PLUS_PRODUCT_ID?: string;
+  CREEM_PRO_PRODUCT_ID?: string;
+  CREEM_WEBHOOK_SECRET?: string;
   DB?: D1Database;
   GOOGLE_CLIENT_ID?: string;
   GOOGLE_CLIENT_SECRET?: string;
